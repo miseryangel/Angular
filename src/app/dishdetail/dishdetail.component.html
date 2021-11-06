@@ -8,22 +8,25 @@
 
   <div fxFlex="40" >
     <mat-card *ngIf="dish">
-        <mat-card-header>
-          <mat-card-title>
-            <h3>{{dish.name | uppercase}}</h3>
-          </mat-card-title>
-        </mat-card-header>
-        <img mat-card-image src={{dish.image}} alt={{dish.name}}>
-        <mat-card-content>
-          <p>{{dish.description}}
-          </p>
-        </mat-card-content>
-        <mat-card-actions>
-          <button mat-button (click) = "goBack()">BACK</button>
-          <button mat-button>LIKE</button>
-          <button mat-button>SHARE</button>
-        </mat-card-actions>
-      </mat-card>
+      <mat-card-header>
+        <mat-card-title>
+          <h3>{{dish.name | uppercase}}</h3>
+        </mat-card-title>
+      </mat-card-header>
+      <img mat-card-image src={{dish.image}} alt={{dish.name}}>
+      <mat-card-content>
+        <p>{{dish.description}}
+        </p>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-button (click) = "goBack()">BACK</button>
+        <button mat-button>LIKE</button>
+        <button mat-button>SHARE</button>
+      </mat-card-actions>
+    </mat-card>
+    <div fxFlex [hidden]="dish">
+      <mat-spinner></mat-spinner> <h4>Loading . . . Please Wait!</h4>
+    </div>
   </div>
 
   <div fxFlex="40" >
@@ -41,6 +44,9 @@
             </p>
         </mat-list-item>
     </mat-list>
+    <div fxFlex [hidden]="dish">
+      <mat-spinner></mat-spinner> <h4>Loading . . . Please Wait!</h4>
+    </div>
   </div>
 
 </div>
