@@ -18,12 +18,13 @@ export class DishdetailComponent implements OnInit {
 
   commentForm!: FormGroup;
   userComment!: Comment;
-  dish!: Dish;
+  dish!: Dish | null;
   dishIds!: string[];
   prev!: string;
   next!: string;
   errMess!: string;
   sliderValue:number = 5;
+  dishCopy!: Dish | null;
 
   @ViewChild('fform') commentFormDirective!:NgForm;
 
@@ -80,7 +81,7 @@ export class DishdetailComponent implements OnInit {
       .subscribe((dishIds) => {this.dishIds = dishIds;});
     this.route.params
       .pipe(switchMap((params: Params) => this.dishService.getDish(params['id'])))
-      .subscribe((dish) => { this.dish = dish; this.setPrevNext(dish.id); },
+      .subscribe((dish) => { this.dish = dish;this.dishCopy = dish; this.setPrevNext(dish.id); },
         errmess => this.errMess = <any>errmess);
   }
 
@@ -112,7 +113,13 @@ export class DishdetailComponent implements OnInit {
     console.log(this.userComment);
     const date = new Date();
     this.userComment.date = date.toISOString();
-    this.dish.comments.push(this.userComment);
+    this.dishCopy!.comments.push(this.userComment);
+    this.dishService.putDish(this.dishCopy!)
+        .subscribe(dish =>{
+          this.dish = dish;
+          this.dishCopy = dish;
+        },
+        errmess => { this.dish = null; this.dishCopy = null; this.errMess = <any> errmess})
     this.commentForm.reset({
       author:'',
       rating:'5',
