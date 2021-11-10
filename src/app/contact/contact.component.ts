@@ -2,7 +2,8 @@ import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Feedback, ContactType } from '../shared/feedback';
 import { NgForm } from '@angular/forms';
-import { flyInOut } from '../animations/app.animation';
+import { flyInOut, expand } from '../animations/app.animation';
+import { FeedbackService } from '../services/feedback.service';
 
 @Component({
   selector: 'app-contact',
@@ -13,13 +14,19 @@ import { flyInOut } from '../animations/app.animation';
     'style': 'display:block;'
   },
   animations: [
-    flyInOut()
+    flyInOut(),
+    expand(),
+
   ]
 })
 export class ContactComponent implements OnInit {
 
   feedbackForm!: FormGroup;
   feedback!: Feedback ;
+  feedbackCopy!: Feedback|null;
+  errMess!: string;
+  waiting:boolean=false;
+  submitting:boolean=false;
   contactType = ContactType;
   
   @ViewChild('fform') feedbackFormDirective!:NgForm;
@@ -71,7 +78,7 @@ export class ContactComponent implements OnInit {
     }
   }
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, private feedbackService: FeedbackService) {
     this.createForm();
   }
 
@@ -95,9 +102,17 @@ export class ContactComponent implements OnInit {
     this.onValueChange();   // reset messages
   }
 
-  onSubmit() {
+  submitFeedback() {
     this.feedback = this.feedbackForm.value;
     console.log(this.feedback);
+    this.waiting = true;
+    this.submitting = true;
+    this.feedbackService.postFeedback(this.feedback)
+        .subscribe(feedback =>{
+          this.feedbackCopy = feedback;
+          this.waiting=false;
+        },
+        errmess => { this.errMess = <any> errmess; this.waiting = false})
     this.feedbackForm.reset({
       firstname: '',
       lastname: '',
@@ -108,6 +123,8 @@ export class ContactComponent implements OnInit {
       message: ''
     });
     this.feedbackFormDirective.resetForm();
+    this.feedbackCopy = null;
+    setTimeout(()=>this.submitting = false,5000);
+    
   }
-
 }
